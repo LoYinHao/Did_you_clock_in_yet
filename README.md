@@ -10,11 +10,31 @@ View your app in AI Studio: https://ai.studio/apps/drive/1eFHB7gI6c5mI7sWrraqKBZ
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:**  Node.js (v18+)
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```bash
+   npm install
+   ```
+
+2. Set environment variables:
+   - Create `.env` (or copy `.env.local`)
+   - Add your API keys (e.g., `GEMINI_API_KEY`)
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Deployment
+
+### GitHub Pages (Automated)
+
+This project is configured to deploy to GitHub Pages automatically via GitHub Actions.
+
+1. Push your changes to the `main` or `master` branch.
+2. Go to your repository **Settings** -> **Pages**.
+3. Under **Build and deployment**, select **Source** as `Deploy from a branch`.
+4. However, with the Custom GitHub Action included (`.github/workflows/deploy.yml`), you should actually select **Source** as **GitHub Actions** (if not auto-selected).
+   - *Note: Steps may vary slightly, but the Action handles the build and deploy.*
+5. Once the Action completes, your site will be live at `https://<your-username>.github.io/Did_you_clock_in_yet/`.
