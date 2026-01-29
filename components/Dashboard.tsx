@@ -3,14 +3,15 @@ import { User, PermissionLevel } from '../types';
 import { ClockPanel } from './ClockPanel';
 import { HistoryPanel } from './HistoryPanel';
 import { UserManagementPanel } from './UserManagementPanel';
-import { LogOut, LayoutDashboard, History, UserCircle, Users } from 'lucide-react';
+import { SystemLogPanel } from './SystemLogPanel';
+import { LogOut, LayoutDashboard, History, UserCircle, Users, ScrollText } from 'lucide-react';
 
 interface DashboardProps {
   user: User;
   onLogout: () => void;
 }
 
-type Tab = 'CLOCK' | 'HISTORY' | 'USERS';
+type Tab = 'CLOCK' | 'HISTORY' | 'USERS' | 'LOGS';
 
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [activeTab, setActiveTab] = useState<Tab>('CLOCK');
@@ -36,8 +37,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 <button
                   onClick={() => setActiveTab('CLOCK')}
                   className={`${activeTab === 'CLOCK'
-                      ? 'border-blue-500 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
+                    ? 'border-blue-500 text-slate-900'
+                    : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
                     } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
                 >
                   <LayoutDashboard className="w-4 h-4 mr-2" />
@@ -46,24 +47,36 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 <button
                   onClick={() => setActiveTab('HISTORY')}
                   className={`${activeTab === 'HISTORY'
-                      ? 'border-blue-500 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
+                    ? 'border-blue-500 text-slate-900'
+                    : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
                     } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
                 >
                   <History className="w-4 h-4 mr-2" />
                   紀錄查詢
                 </button>
                 {isAdmin && (
-                  <button
-                    onClick={() => setActiveTab('USERS')}
-                    className={`${activeTab === 'USERS'
+                  <>
+                    <button
+                      onClick={() => setActiveTab('USERS')}
+                      className={`${activeTab === 'USERS'
                         ? 'border-blue-500 text-slate-900'
                         : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
-                      } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    人員管理
-                  </button>
+                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      人員管理
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('LOGS')}
+                      className={`${activeTab === 'LOGS'
+                        ? 'border-blue-500 text-slate-900'
+                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
+                        } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
+                    >
+                      <ScrollText className="w-4 h-4 mr-2" />
+                      系統日誌
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -89,7 +102,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         </div>
 
         {/* Mobile Nav */}
-        <div className="sm:hidden border-t border-slate-200 grid grid-cols-3">
+        <div className={`sm:hidden border-t border-slate-200 grid ${isAdmin ? 'grid-cols-4' : 'grid-cols-2'}`}>
           <button
             onClick={() => setActiveTab('CLOCK')}
             className={`py-3 text-center text-sm font-medium ${activeTab === 'CLOCK' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
@@ -102,15 +115,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           >
             紀錄
           </button>
-          {isAdmin ? (
-            <button
-              onClick={() => setActiveTab('USERS')}
-              className={`py-3 text-center text-sm font-medium ${activeTab === 'USERS' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
-            >
-              人員
-            </button>
-          ) : (
-            <div className="bg-slate-50"></div>
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => setActiveTab('USERS')}
+                className={`py-3 text-center text-sm font-medium ${activeTab === 'USERS' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
+              >
+                人員
+              </button>
+              <button
+                onClick={() => setActiveTab('LOGS')}
+                className={`py-3 text-center text-sm font-medium ${activeTab === 'LOGS' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
+              >
+                日誌
+              </button>
+            </>
           )}
         </div>
       </header>
@@ -120,7 +139,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[600px]">
           {activeTab === 'CLOCK' && <ClockPanel user={user} />}
           {activeTab === 'HISTORY' && <HistoryPanel user={user} />}
-          {activeTab === 'USERS' && isAdmin && <UserManagementPanel />}
+          {activeTab === 'USERS' && isAdmin && <UserManagementPanel currentUser={user} />}
+          {activeTab === 'LOGS' && isAdmin && <SystemLogPanel />}
         </div>
       </main>
     </div>

@@ -29,11 +29,37 @@ export interface AttendanceRecord {
   id: string;
   userId: string;
   userName: string;
-  type: AttendanceType;
-  timestamp: number; // Unix timestamp
-  dateStr: string;   // YYYY-MM-DD for easy querying
+  dateStr: string;   // YYYY-MM-DD
+
+  // 上班資訊
+  startTime?: string;       // 格式化時間 (e.g., 14:30:05)
+  systemStartTime?: number; // 系統時間戳
+  startLocation?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
+
+  // 下班資訊
+  endTime?: string;         // 格式化時間
+  systemEndTime?: number;   // 系統時間戳
+  endLocation?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
+
+  totalMinutes?: number;    // 本日上班總分鐘
   status: RecordStatus;
-  errorMessage?: string; // If status is ERROR
+  errorMessage?: string;    // If status is ERROR
+}
+
+export interface SystemLog {
+  id: string;
+  userName: string;
+  timestamp: number;
+  action: string;    // "Login", "Logout", "Clock In", "Clock Out", "User Management"
+  details: string;   // JSON string or description
 }
 
 // For the mock service to simulate sheet rows

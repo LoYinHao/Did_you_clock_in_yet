@@ -5,7 +5,11 @@ import { Search, Plus, Download, Edit2, Trash2, UserCheck, UserX, Loader2, Datab
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-export const UserManagementPanel: React.FC = () => {
+interface UserManagementPanelProps {
+  currentUser: User;
+}
+
+export const UserManagementPanel: React.FC<UserManagementPanelProps> = ({ currentUser }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,6 +89,7 @@ export const UserManagementPanel: React.FC = () => {
       try {
         const jsonStr = event.target?.result as string;
         await SheetService.importAllData(jsonStr);
+        await SheetService.addLog(currentUser.name, "還原資料庫", "手動匯入 JSON 資料");
         alert('資料庫還原成功！頁面將重新整理。');
         window.location.reload();
       } catch (err) {
@@ -119,9 +124,9 @@ export const UserManagementPanel: React.FC = () => {
 
     try {
       if (modalMode === 'ADD') {
-        await SheetService.addUser(editingUser as User);
+        await SheetService.addUser(editingUser as User, currentUser.name);
       } else {
-        await SheetService.updateUser(editingUser as User);
+        await SheetService.updateUser(editingUser as User, currentUser.name);
       }
       setIsModalOpen(false);
       fetchUsers();
@@ -133,7 +138,7 @@ export const UserManagementPanel: React.FC = () => {
   const handleDeleteClick = async (user: User) => {
     if (confirm(`確定要刪除「${user.name}」嗎？此操作無法復原。`)) {
       try {
-        await SheetService.deleteUser(user.id);
+        await SheetService.deleteUser(user.id, currentUser.name);
         fetchUsers();
       } catch (err: any) {
         alert("刪除失敗: " + err.message);

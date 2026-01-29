@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, AttendanceType } from '../types';
 import { SheetService } from '../services/sheetService';
-import { Loader2, Briefcase, Home, CheckCircle, AlertOctagon, Clock } from 'lucide-react';
+import { Loader2, Briefcase, Home, CheckCircle, AlertOctagon, Clock, MapPin, Info } from 'lucide-react';
 
 interface ClockPanelProps {
   user: User;
@@ -27,6 +27,58 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
     return () => clearInterval(timer);
   }, []);
 
+  const getIpLocation = async (): Promise<{ latitude: number; longitude: number; address?: string } | undefined> => {
+    try {
+      console.log("Attempting to get IP-based location...");
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      if (data.latitude && data.longitude) {
+        console.log("IP Location retrieved:", data.latitude, data.longitude);
+        return {
+          latitude: data.latitude,
+          longitude: data.longitude,
+          address: `${data.city}, ${data.region}, ${data.country_name} (IP Based)`
+        };
+      }
+    } catch (err) {
+      console.error("IP Location fetch failed:", err);
+    }
+    return undefined;
+  };
+
+  const getGeolocation = (): Promise<{ latitude: number; longitude: number; address?: string } | undefined> => {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        console.warn("Geolocation API not supported");
+        resolve(undefined);
+        return;
+      }
+
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      };
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("GPS Location retrieved:", position.coords.latitude, position.coords.longitude);
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+        },
+        async (error) => {
+          console.warn("GPS Location failed:", error.message);
+          // Fallback to IP address location
+          const ipLoc = await getIpLocation();
+          resolve(ipLoc);
+        },
+        options
+      );
+    });
+  };
+
   const handleClock = async (type: AttendanceType) => {
     if (!selectedDate) {
       setMessage({ text: '請選擇日期', type: 'error' });
@@ -37,14 +89,14 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
     setMessage(null);
 
     try {
-      // Use current time for the timestamp, but user-selected date for the record dateStr
-      // This allows back-dating if policy allows, or strict checking. 
-      // Prompt implies "Date selectable", so we pass selectedDate.
+      const location = await getGeolocation();
+      console.log("Clock action location context:", location);
+
       const result = await SheetService.clockInOrOut(
-        user, 
-        type, 
-        selectedDate, 
-        new Date().getTime()
+        user,
+        type,
+        selectedDate,
+        location
       );
 
       setMessage({
@@ -52,8 +104,12 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
         type: result.success ? 'success' : 'error'
       });
 
-    } catch (err) {
-      setMessage({ text: '系統錯誤，無法寫入 Google Sheets', type: 'error' });
+    } catch (err: any) {
+      console.error("Critical Clock-in Error:", err);
+      setMessage({
+        text: `系統錯誤: ${err.message || '無法寫入資料庫'}。請檢查網路連線或聯繫管理員。`,
+        type: 'error'
+      });
     } finally {
       setLoading(null);
     }
@@ -61,7 +117,7 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 space-y-8 animate-in fade-in duration-500">
-      
+
       {/* Time Display */}
       <div className="text-center space-y-2">
         <div className="inline-flex items-center justify-center p-3 bg-blue-50 rounded-full text-blue-600 mb-4">
@@ -106,6 +162,9 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
           )}
           <span className="text-2xl font-bold">上班</span>
           <span className="text-xs text-slate-400 mt-1">Clock In</span>
+          <div className="absolute top-2 right-2 opacity-20 group-hover:opacity-100 transition-opacity">
+            <MapPin className="w-4 h-4" />
+          </div>
         </button>
 
         <button
@@ -124,6 +183,9 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
           )}
           <span className="text-2xl font-bold">下班</span>
           <span className="text-xs text-slate-400 mt-1">Clock Out</span>
+          <div className="absolute top-2 right-2 opacity-20 group-hover:opacity-100 transition-opacity">
+            <MapPin className="w-4 h-4" />
+          </div>
         </button>
       </div>
 
@@ -140,14 +202,18 @@ export const ClockPanel: React.FC<ClockPanelProps> = ({ user }) => {
             <AlertOctagon className="w-6 h-6 mr-3 flex-shrink-0" />
           )}
           <div className="flex-1">
-             <p className="font-bold">{message.type === 'success' ? '打卡成功' : '打卡異常'}</p>
-             <p className="text-sm opacity-90">{message.text}</p>
+            <p className="font-bold">{message.type === 'success' ? '打卡成功' : '打卡異常'}</p>
+            <p className="text-sm opacity-90">{message.text}</p>
           </div>
         </div>
       )}
 
-      <div className="mt-8 text-center text-xs text-slate-400 max-w-md">
-        <p>注意：系統將自動檢核重複打卡。若發生重複打卡，系統將自動記錄該筆異常並寫入資料庫。</p>
+      <div className="mt-8 bg-slate-50 p-4 rounded-xl border border-slate-200 text-center text-xs text-slate-500 max-w-md flex flex-col gap-2">
+        <div className="flex items-center justify-center gap-1 text-blue-600 font-bold">
+          <Info className="w-3 h-3" />
+          <span>打卡位置提醒</span>
+        </div>
+        <p>系統將優先嘗試抓取精確 GPS 座標。若您未開啟 GPS 或瀏覽器權限，系統將自動透過網路路徑計算概略位置（IP 定位）以供後台存查。</p>
       </div>
     </div>
   );
