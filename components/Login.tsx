@@ -21,7 +21,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
     try {
       const user = await SheetService.checkUserExists(email);
-      
+
       if (user) {
         onLoginSuccess(user);
       } else {
@@ -29,7 +29,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <span>
             帳號 <span className="font-bold underline">{email}</span> 無權限登入。
             <br />
-            需聯繫豪亮科技有限公司 負責人羅英豪
+            需聯繫豪亮科技 負責人羅英豪
           </span>
         );
       }
@@ -43,12 +43,19 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center">
-            <Building2 className="h-8 w-8 text-white" />
+        <div className="text-center space-y-4">
+          <div className="mx-auto h-24 w-24 flex items-center justify-center">
+            <img
+              src="https://lh3.googleusercontent.com/d/1an2P9_eOmoBciosufGRIwS_v9s8v1o4j"
+              alt="豪亮科技 Logo"
+              className="h-20 w-auto object-contain"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">豪亮打卡系統</h1>
-          <p className="text-slate-500">請使用 Google 帳號登入</p>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-black text-slate-900 tracking-wider">豪亮科技</h1>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">IntelliTrafficTek Limited Company</p>
+          </div>
+          <p className="text-slate-500 text-sm">請使用 Google 帳號登入</p>
         </div>
 
         {error && (
@@ -93,38 +100,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           </button>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-slate-500">測試帳號</span>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-3 gap-2">
-           <button
-            type="button"
-            onClick={() => setEmail('user@haoliang.com')}
-            className="w-full inline-flex justify-center py-2 px-2 border border-slate-300 rounded-md shadow-sm bg-white text-xs font-medium text-slate-700 hover:bg-slate-50"
-          >
-            一般員工
-          </button>
-           <button
-            type="button"
-            onClick={() => setEmail('admin@haoliang.com')}
-            className="w-full inline-flex justify-center py-2 px-2 border border-slate-300 rounded-md shadow-sm bg-blue-50 text-xs font-bold text-blue-700 hover:bg-blue-100"
-          >
-            最高權限
-          </button>
-          <button
-            type="button"
-            onClick={() => setEmail('unknown@test.com')}
-            className="w-full inline-flex justify-center py-2 px-2 border border-slate-300 rounded-md shadow-sm bg-white text-xs font-medium text-slate-700 hover:bg-slate-50"
-          >
-            未註冊
-          </button>
-        </div>
       </div>
     </div>
   );

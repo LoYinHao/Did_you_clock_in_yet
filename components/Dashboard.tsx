@@ -24,31 +24,31 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                  HL
-                </div>
-                <span className="hidden md:block font-bold text-xl text-slate-800 tracking-tight">豪亮打卡系統</span>
+              <div className="flex-shrink-0 flex items-center gap-3">
+                <img
+                  src="https://lh3.googleusercontent.com/d/1an2P9_eOmoBciosufGRIwS_v9s8v1o4j"
+                  alt="Logo"
+                  className="w-10 h-10 object-contain"
+                />
+                <span className="hidden md:block font-black text-xl text-slate-800 tracking-tight">豪亮科技</span>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <button
                   onClick={() => setActiveTab('CLOCK')}
-                  className={`${
-                    activeTab === 'CLOCK'
+                  className={`${activeTab === 'CLOCK'
                       ? 'border-blue-500 text-slate-900'
                       : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
                 >
                   <LayoutDashboard className="w-4 h-4 mr-2" />
                   打卡作業
                 </button>
                 <button
                   onClick={() => setActiveTab('HISTORY')}
-                  className={`${
-                    activeTab === 'HISTORY'
+                  className={`${activeTab === 'HISTORY'
                       ? 'border-blue-500 text-slate-900'
                       : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
                 >
                   <History className="w-4 h-4 mr-2" />
                   紀錄查詢
@@ -56,11 +56,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 {isAdmin && (
                   <button
                     onClick={() => setActiveTab('USERS')}
-                    className={`${
-                      activeTab === 'USERS'
+                    className={`${activeTab === 'USERS'
                         ? 'border-blue-500 text-slate-900'
                         : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'
-                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
+                      } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-16 transition-colors`}
                   >
                     <Users className="w-4 h-4 mr-2" />
                     人員管理
@@ -68,14 +67,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 py-1.5 px-3 rounded-full border border-slate-200">
                 <UserCircle className="w-5 h-5 text-blue-500" />
                 <span className="font-medium text-slate-900">{user.name}</span>
                 <span className="text-xs text-slate-400 border-l border-slate-300 pl-2 ml-1">
-                  {user.permission === PermissionLevel.ADMIN ? '最高權限' : 
-                   user.permission === PermissionLevel.VIEW_ALL ? '檢視全員' : '一般權限'}
+                  {user.permission === PermissionLevel.ADMIN ? '最高權限' :
+                    user.permission === PermissionLevel.VIEW_ALL ? '檢視全員' : '一般權限'}
                 </span>
               </div>
               <button
@@ -88,40 +87,40 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             </div>
           </div>
         </div>
-        
+
         {/* Mobile Nav */}
         <div className="sm:hidden border-t border-slate-200 grid grid-cols-3">
-           <button
-              onClick={() => setActiveTab('CLOCK')}
-              className={`py-3 text-center text-sm font-medium ${activeTab === 'CLOCK' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
-            >
-              打卡
-            </button>
+          <button
+            onClick={() => setActiveTab('CLOCK')}
+            className={`py-3 text-center text-sm font-medium ${activeTab === 'CLOCK' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
+          >
+            打卡
+          </button>
+          <button
+            onClick={() => setActiveTab('HISTORY')}
+            className={`py-3 text-center text-sm font-medium ${activeTab === 'HISTORY' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
+          >
+            紀錄
+          </button>
+          {isAdmin ? (
             <button
-              onClick={() => setActiveTab('HISTORY')}
-              className={`py-3 text-center text-sm font-medium ${activeTab === 'HISTORY' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
+              onClick={() => setActiveTab('USERS')}
+              className={`py-3 text-center text-sm font-medium ${activeTab === 'USERS' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
             >
-              紀錄
+              人員
             </button>
-            {isAdmin ? (
-               <button
-               onClick={() => setActiveTab('USERS')}
-               className={`py-3 text-center text-sm font-medium ${activeTab === 'USERS' ? 'text-blue-600 bg-blue-50' : 'text-slate-500'}`}
-             >
-               人員
-             </button>
-            ) : (
-              <div className="bg-slate-50"></div>
-            )}
+          ) : (
+            <div className="bg-slate-50"></div>
+          )}
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[600px]">
-           {activeTab === 'CLOCK' && <ClockPanel user={user} />}
-           {activeTab === 'HISTORY' && <HistoryPanel user={user} />}
-           {activeTab === 'USERS' && isAdmin && <UserManagementPanel />}
+          {activeTab === 'CLOCK' && <ClockPanel user={user} />}
+          {activeTab === 'HISTORY' && <HistoryPanel user={user} />}
+          {activeTab === 'USERS' && isAdmin && <UserManagementPanel />}
         </div>
       </main>
     </div>
