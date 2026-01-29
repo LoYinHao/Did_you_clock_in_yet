@@ -1,0 +1,5 @@
+{
+  "name": "豪亮打卡系統 (Hao Liang Attendance)",
+  "description": "A professional attendance tracking system integrated with simulated Google Sheets/Auth logic, featuring role-based access, clock-in/out validation, and history reporting.",
+  "requestFramePermissions": []
+}
